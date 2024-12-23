@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="1b0bf46c-0abe-41de-bebf-decd629cd033" >
+		<db:oracle-connection host="localhost" user="system" password="qwerfdsa" instance="xe" />
+	</db:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2f8a6173-4a00-4967-a281-fcbae02ab47e" basePath="emp-sapi" responseStreamingMode="AUTO" primaryNodeOnly="false" path="create-employee" config-ref="HTTP_Listener_config" allowedMethods="POST" tracking:enable-default-events="false">
+		<http:listener-connection host="0.0.0.0" port="8090" />
+	</http:listener-config>
+	<flow name="emp-sapiFlow" doc:id="2f8a6173-4a00-4967-a281-fcbae02ab47e" >
+		<http:listener doc:name="Listener" doc:id="6b449627-5b5a-415c-83e3-8453f8f3140e" config-ref="HTTP_Listener_config" path="create-employee" allowedMethods="POST"/>
+		<logger level="INFO" doc:name="Logger" doc:id="47a8d562-3702-4e40-a380-72f5f0c4d0bb" message="start flow"/>
+		<db:insert doc:name="Insert" doc:id="f601f54e-7de9-4674-9289-7f9be2184534" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into emp(emp_id,emp_name,emp_status) values(:empID, :empName, :empStatus)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+empID:payload.employeeID,
+empName:payload.employeeName,
+empStatus:payload.employeeStatus
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="3a9b0aa7-0b08-41c7-8d61-84a5992fff4b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+"status":200,
+"message":"success" 
+
+
+
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

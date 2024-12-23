@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd"><flow name="delete-dataFlow" doc:id="10db0525-532f-4bba-9b8c-8d361513cb76" >
+		<http:listener doc:name="Listener" doc:id="5c514967-e93b-4d71-aee8-251cc9dadcb2" config-ref="HTTP_Listener_config" path="delete-data/{employeeID}/{employeeName}" allowedMethods="DELETE"/>
+		<logger level="INFO" doc:name="Logger" doc:id="38737a4c-8a31-4b62-9833-9de18ece752b" message="starat"/>
+		<db:stored-procedure doc:name="Stored procedure" doc:id="ce2cbf61-b27a-4637-b3ed-cce02612d795" config-ref="Database_Config">
+			<db:sql ><![CDATA[{call delete_emp(:empID, :empName)}
+]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+
+empID: attributes.uriParams.employeeID,
+empName: attributes.uriParams.employeeName
+
+}]]]></db:input-parameters>
+		</db:stored-procedure>
+		<ee:transform doc:name="Transform Message" doc:id="9ebb18f1-e067-4b95-b0f0-0c99c3c97db7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
+

@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="ger-employee" format="json">
+      <types:shape format="weave" example="examples/getemploee.json-1.txt"><![CDATA[%dw 2.0
+
+type ger_employee = Array<{|  employeeID: Number {"typeId": "int"},   employeeName: String,   employeeStatus: String|}> {"example": "[{\\\"employeeID\\\":100,\\\"employeeName\\\":\\\"Chinna\\\",\\\"employeeStatus\\\":\\\"A\\\"},{\\\"employeeID\\\":100,\\\"employeeName\\\":\\\"Chinna\\\",\\\"employeeStatus\\\":\\\"A\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#3b825b88-89bc-40e2-abd9-f6c171e25a42">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="ger-employee"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
